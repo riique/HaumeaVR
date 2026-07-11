@@ -1,0 +1,87 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="UniversalXRBridge.Launcher.App"
+             RequestedThemeVariant="Light">
+  <Application.Resources>
+    <Color x:Key="UxrbBlue">#002FA7</Color>
+    <Color x:Key="UxrbInk">#111111</Color>
+    <Color x:Key="UxrbMuted">#61646B</Color>
+    <Color x:Key="UxrbLine">#D9DBE1</Color>
+    <Color x:Key="UxrbSurface">#FFFFFF</Color>
+    <Color x:Key="UxrbSurfaceAlt">#F7F7F8</Color>
+    <SolidColorBrush x:Key="BlueBrush" Color="{StaticResource UxrbBlue}" />
+    <SolidColorBrush x:Key="InkBrush" Color="{StaticResource UxrbInk}" />
+    <SolidColorBrush x:Key="MutedBrush" Color="{StaticResource UxrbMuted}" />
+    <SolidColorBrush x:Key="LineBrush" Color="{StaticResource UxrbLine}" />
+    <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource UxrbSurface}" />
+    <SolidColorBrush x:Key="SurfaceAltBrush" Color="{StaticResource UxrbSurfaceAlt}" />
+  </Application.Resources>
+  <Application.Styles>
+    <SimpleTheme />
+    <Style Selector="Window">
+      <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
+      <Setter Property="Foreground" Value="{StaticResource InkBrush}" />
+      <Setter Property="FontFamily" Value="Helvetica Neue, Helvetica, Arial" />
+      <Setter Property="FontSize" Value="14" />
+    </Style>
+    <Style Selector="TextBlock.section-number">
+      <Setter Property="FontSize" Value="34" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="Foreground" Value="{StaticResource BlueBrush}" />
+      <Setter Property="LineHeight" Value="34" />
+    </Style>
+    <Style Selector="TextBlock.section-title">
+      <Setter Property="FontSize" Value="17" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Foreground" Value="{StaticResource InkBrush}" />
+    </Style>
+    <Style Selector="TextBlock.label">
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+    </Style>
+    <Style Selector="TextBlock.muted">
+      <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+    </Style>
+    <Style Selector="Button">
+      <Setter Property="CornerRadius" Value="0" />
+      <Setter Property="Padding" Value="16,10" />
+      <Setter Property="MinHeight" Value="38" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
+      <Setter Property="Foreground" Value="{StaticResource BlueBrush}" />
+      <Setter Property="BorderBrush" Value="{StaticResource BlueBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+    </Style>
+    <Style Selector="Button:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{StaticResource SurfaceAltBrush}" />
+    </Style>
+    <Style Selector="Button.primary">
+      <Setter Property="Background" Value="{StaticResource BlueBrush}" />
+      <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#001F72" />
+    </Style>
+    <Style Selector="TextBox">
+      <Setter Property="CornerRadius" Value="0" />
+      <Setter Property="BorderBrush" Value="{StaticResource LineBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
+      <Setter Property="Padding" Value="10,8" />
+    </Style>
+    <Style Selector="ListBox">
+      <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="ListBoxItem">
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Margin" Value="0" />
+      <Setter Property="CornerRadius" Value="0" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    </Style>
+    <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+      <Setter Property="Background" Value="#E8EEFF" />
+    </Style>
+  </Application.Styles>
+</Application>

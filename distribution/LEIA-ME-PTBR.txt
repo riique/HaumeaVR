@@ -1,0 +1,44 @@
+HAUMEAVR 0.1.0 — WINDOWS X64
+=============================
+
+COMO ABRIR
+
+1. Extraia todo o conteúdo do ZIP para uma pasta local.
+2. Conecte e ative o headset no aplicativo do fabricante.
+3. Execute HaumeaVR.Launcher.exe.
+4. Selecione um runtime OpenXR válido.
+5. Adicione ou selecione o jogo e clique em Analisar.
+6. Para jogos comuns, use Virtual Screen.
+
+Não execute o programa diretamente de dentro do ZIP. O pacote é portátil e não
+precisa de instalação, Visual Studio, compilador, .NET ou Visual C++
+Redistributable.
+
+O QUE FUNCIONA NESTA VERSÃO
+
+- Virtual Screen plano/curvo para jogos e janelas capturáveis.
+- Rastreamento da cabeça para observar a tela virtual.
+- Recentramento por F8 e por ação OpenXR.
+- Perfis locais e detecção de Steam/Epic/executáveis manuais.
+- Unity Stereo somente em players Unity Mono preparados com os dois módulos
+  controlados do HaumeaVR durante a build do jogo.
+
+LIMITES IMPORTANTES
+
+- Esta versão não transforma automaticamente um jogo comercial Unity, como
+  MiSide, em VR nativo.
+- Ainda não há controle de mãos dentro da lógica de jogos comerciais, hand
+  tracking, emulação completa de controles VR para mouse/XInput ou interação
+  física com objetos do jogo.
+- Depth 3D e o observador D3D11 são fundações técnicas, não modos comerciais
+  habilitados no launcher.
+- Jogos com anti-cheat são bloqueados para qualquer integração no processo;
+  somente Virtual Screen externo deve ser usado.
+
+SEGURANÇA E INTEGRIDADE
+
+O arquivo SHA256SUMS.txt contém o SHA-256 de cada arquivo publicado. O programa
+não altera permanentemente o runtime OpenXR global e não instala driver, serviço
+ou componente de kernel.
+
+Logs: %LOCALAPPDATA%\HaumeaVR\logs

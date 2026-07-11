@@ -1,0 +1,40 @@
+# Build output
+/build/
+/out/
+/artifacts/
+/.cache/
+**/bin/
+**/obj/
+
+# Unity compatibility lab generated state
+/tests/unity-lab/Library/
+/tests/unity-lab/Logs/
+/tests/unity-lab/Temp/
+/tests/unity-lab/UserSettings/
+/tests/unity-lab/obj/
+/tests/unity-lab/Assets/Generated/
+/tests/unity-lab/Assets/Scenes/
+/tests/unity-lab/Assets/Plugins/x86_64/*.dll
+
+# CMake
+CMakeUserPresets.json
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+Testing/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.VC.db
+*.VC.VC.opendb
+
+# Runtime output
+*.log
+*.dmp
+
+# Windows
+Thumbs.db
+Desktop.ini

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://haumea.local/uxrb/ipc-message.schema.json",
+  "title": "UXRB IPC JSON payload",
+  "type": "object",
+  "required": ["type"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "get-status",
+        "start-virtual-screen",
+        "start-unity-stereo",
+        "stop-session",
+        "recenter",
+        "status",
+        "metrics",
+        "fallback",
+        "log",
+        "error"
+      ]
+    },
+    "data": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

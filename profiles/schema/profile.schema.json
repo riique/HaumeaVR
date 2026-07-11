@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://haumea.local/uxrb/profile.schema.json",
+  "title": "UniversalXR Bridge game profile",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "id",
+    "displayName",
+    "executable",
+    "detection",
+    "rendering",
+    "camera",
+    "hud",
+    "input",
+    "safety"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "executable": {
+      "type": "object",
+      "required": ["path"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "type": ["string", "null"], "pattern": "^[A-Fa-f0-9]{64}$" },
+        "launchArguments": {
+          "type": "array",
+          "items": { "type": "string", "maxLength": 4096 },
+          "maxItems": 64
+        }
+      },
+      "additionalProperties": false
+    },
+    "detection": {
+      "type": "object",
+      "required": ["engine", "scriptingBackend", "graphicsApi", "renderPipeline", "architecture", "antiCheat"],
+      "properties": {
+        "engine": { "enum": ["unity", "unreal", "generic", "unknown"] },
+        "engineVersion": { "type": ["string", "null"], "maxLength": 100 },
+        "scriptingBackend": { "enum": ["mono", "il2cpp", "native", "unknown"] },
+        "graphicsApi": { "enum": ["d3d11", "d3d12", "vulkan", "opengl", "unknown"] },
+        "renderPipeline": { "enum": ["builtin", "urp", "hdrp", "custom", "unknown"] },
+        "architecture": { "enum": ["x64", "x86", "arm64", "unknown"] },
+        "antiCheat": { "enum": ["not-detected", "detected", "unknown"] },
+        "antiCheatProducts": {
+          "type": "array",
+          "items": { "type": "string", "maxLength": 100 },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "rendering": {
+      "type": "object",
+      "required": ["preferredMode", "fallbackOrder", "renderScale", "worldScale"],
+      "properties": {
+        "preferredMode": { "$ref": "#/$defs/renderMode" },
+        "fallbackOrder": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/renderMode" },
+          "minItems": 1,
+          "maxItems": 4,
+          "uniqueItems": true
+        },
+        "renderScale": { "type": "number", "minimum": 0.25, "maximum": 2.0 },
+        "worldScale": { "type": "number", "exclusiveMinimum": 0.0, "maximum": 10.0 },
+        "screenDistanceMeters": { "type": "number", "minimum": 0.5, "maximum": 10.0 },
+        "screenWidthMeters": { "type": "number", "minimum": 0.5, "maximum": 10.0 },
+        "screenCurvature": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+      },
+      "additionalProperties": false
+    },
+    "camera": {
+      "type": "object",
+      "required": ["trackingMode", "positionScale", "rotationScale", "cutsceneMode"],
+      "properties": {
+        "trackingMode": { "enum": ["coupled", "decoupled", "hybrid", "rotation-only", "six-dof"] },
+        "positionScale": { "type": "number", "minimum": 0.0, "maximum": 10.0 },
+        "rotationScale": { "type": "number", "minimum": 0.0, "maximum": 4.0 },
+        "cutsceneMode": { "enum": ["profile", "rotation-only", "freeze", "original"] },
+        "heightOffsetMeters": { "type": "number", "minimum": -3.0, "maximum": 3.0 },
+        "translationLimitMeters": { "type": "number", "minimum": 0.0, "maximum": 5.0 }
+      },
+      "additionalProperties": false
+    },
+    "hud": {
+      "type": "object",
+      "required": ["mode", "distance", "scale", "curvature", "opacity"],
+      "properties": {
+        "mode": { "enum": ["head-locked", "world", "curved", "original", "openxr-layer"] },
+        "distance": { "type": "number", "minimum": 0.1, "maximum": 20.0 },
+        "scale": { "type": "number", "minimum": 0.1, "maximum": 5.0 },
+        "curvature": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "opacity": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+      },
+      "additionalProperties": false
+    },
+    "input": {
+      "type": "object",
+      "required": ["controllerMode", "bindings"],
+      "properties": {
+        "controllerMode": { "enum": ["none", "xinput", "keyboard-mouse", "mixed"] },
+        "bindings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["source", "target"],
+            "properties": {
+              "source": { "type": "string", "minLength": 1, "maxLength": 200 },
+              "target": { "type": "string", "minLength": 1, "maxLength": 200 },
+              "scale": { "type": "number", "minimum": -10.0, "maximum": 10.0 },
+              "deadzone": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+            },
+            "additionalProperties": false
+          },
+          "maxItems": 256
+        }
+      },
+      "additionalProperties": false
+    },
+    "safety": {
+      "type": "object",
+      "required": ["safeMode", "blockInjectionWithAntiCheat", "allowUnsignedModules"],
+      "properties": {
+        "safeMode": { "type": "boolean" },
+        "blockInjectionWithAntiCheat": { "const": true },
+        "allowUnsignedModules": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "renderMode": {
+      "enum": ["unity-native", "geometry-stereo", "depth-3d", "virtual-screen"]
+    }
+  },
+  "additionalProperties": false
+}

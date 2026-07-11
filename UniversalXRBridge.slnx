@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/apps/">
+    <Project Path="apps/launcher/UniversalXRBridge.Launcher.csproj" />
+    <Project Path="apps/launcher.tests/UniversalXRBridge.Launcher.Tests.csproj" />
+  </Folder>
+</Solution>

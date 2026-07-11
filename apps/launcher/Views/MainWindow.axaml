@@ -1,0 +1,219 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="UniversalXRBridge.Launcher.Views.MainWindow"
+        Title="HaumeaVR"
+        Width="1440"
+        Height="900"
+        MinWidth="1180"
+        MinHeight="720"
+        WindowStartupLocation="CenterScreen">
+  <Grid RowDefinitions="112,58,*,38">
+    <Border Grid.Row="0" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1">
+      <Grid ColumnDefinitions="360,*,360">
+        <Border Grid.Column="0" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,1,0" Padding="28,18">
+          <StackPanel Spacing="0">
+            <TextBlock Text="HaumeaVR" FontSize="34" FontWeight="Bold" Foreground="{StaticResource BlueBrush}" LineHeight="38" />
+            <TextBlock Text="Jogos de monitor em realidade virtual" FontSize="13" FontWeight="SemiBold" />
+          </StackPanel>
+        </Border>
+        <StackPanel Grid.Column="1" Margin="30,20" VerticalAlignment="Center" Spacing="5">
+          <TextBlock Text="Conversão de jogos para OpenXR" FontSize="24" FontWeight="SemiBold" />
+          <TextBlock Text="Detecção, perfil, fallback e diagnóstico no mesmo fluxo." Classes="muted" />
+        </StackPanel>
+        <Border Grid.Column="2" BorderBrush="{StaticResource LineBrush}" BorderThickness="1,0,0,0" Padding="28,18">
+          <Grid ColumnDefinitions="*,Auto">
+            <StackPanel VerticalAlignment="Center">
+              <TextBlock Text="BIBLIOTECA LOCAL" Classes="label" />
+              <TextBlock Text="{Binding GameCountText}" FontSize="24" FontWeight="SemiBold" />
+            </StackPanel>
+            <TextBlock Grid.Column="1" Text="M1" FontSize="38" FontWeight="Bold" Foreground="{StaticResource BlueBrush}" VerticalAlignment="Center" />
+          </Grid>
+        </Border>
+      </Grid>
+    </Border>
+
+    <Border Grid.Row="1" Background="{StaticResource SurfaceAltBrush}" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1">
+      <Grid ColumnDefinitions="360,*,240,Auto,Auto" VerticalAlignment="Stretch">
+        <Border Grid.Column="0" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,1,0" Padding="28,0">
+          <TextBlock Text="{Binding RuntimeStatusText}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource BlueBrush}" />
+        </Border>
+        <StackPanel Grid.Column="1" Margin="20,0" VerticalAlignment="Center" Spacing="2">
+          <TextBlock Text="{Binding ActiveRuntimePath}" TextTrimming="CharacterEllipsis" />
+          <TextBlock Text="{Binding ObservedAtText}" Classes="muted" FontSize="11" />
+        </StackPanel>
+        <ComboBox Grid.Column="2" ItemsSource="{Binding RegisteredRuntimes}" SelectedItem="{Binding SelectedRuntime}" Margin="0,9,10,9">
+          <ComboBox.ItemTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding DisplayName}" TextTrimming="CharacterEllipsis" />
+            </DataTemplate>
+          </ComboBox.ItemTemplate>
+        </ComboBox>
+        <Button Grid.Column="3" Content="Atualizar" Command="{Binding RefreshCommand}" Margin="0,9,8,9" />
+        <Button Grid.Column="4" Content="Diagnóstico" Command="{Binding DiagnoseCommand}" Classes="primary" Margin="0,9,20,9" />
+      </Grid>
+    </Border>
+
+    <Grid Grid.Row="2" ColumnDefinitions="360,*,410">
+      <Border Grid.Column="0" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,1,0">
+        <Grid RowDefinitions="84,*,64">
+          <Border Grid.Row="0" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="24,13">
+            <Grid ColumnDefinitions="58,*">
+              <TextBlock Text="01" Classes="section-number" />
+              <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                <TextBlock Text="Jogos detectados" Classes="section-title" />
+                <TextBlock Text="Steam, Epic e executáveis adicionados" Classes="muted" FontSize="11" />
+              </StackPanel>
+            </Grid>
+          </Border>
+          <ListBox Grid.Row="1"
+                   ItemsSource="{Binding Games}"
+                   SelectedItem="{Binding SelectedGame}"
+                   ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <Border BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="24,15">
+                  <StackPanel Spacing="5">
+                    <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" FontSize="15" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{Binding Source}" Foreground="{StaticResource BlueBrush}" FontSize="11" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding ExecutablePath}" Classes="muted" FontSize="11" TextTrimming="CharacterEllipsis" />
+                  </StackPanel>
+                </Border>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+          <Grid Grid.Row="2" ColumnDefinitions="*,*" Margin="16,12" ColumnSpacing="8">
+            <Button Grid.Column="0" Content="Adicionar EXE" Click="AddExecutableClicked" />
+            <Button Grid.Column="1" Content="Atualizar" Command="{Binding RefreshCommand}" />
+          </Grid>
+        </Grid>
+      </Border>
+
+      <Border Grid.Column="1" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,1,0">
+        <Grid RowDefinitions="84,Auto,*,220">
+          <Border Grid.Row="0" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="24,13">
+            <Grid ColumnDefinitions="58,*">
+              <TextBlock Text="02" Classes="section-number" />
+              <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                <TextBlock Text="Perfil do jogo" Classes="section-title" />
+                <TextBlock Text="Sinais detectados e configuração local" Classes="muted" FontSize="11" />
+              </StackPanel>
+            </Grid>
+          </Border>
+
+          <Border Grid.Row="1" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="24,18">
+            <Grid RowDefinitions="Auto,Auto" RowSpacing="12">
+              <TextBlock Text="{Binding ExecutablePath}" TextWrapping="Wrap" />
+              <Grid Grid.Row="1" ColumnDefinitions="Auto,Auto,*" ColumnSpacing="8">
+                <Button Grid.Column="0" Content="Analisar" Command="{Binding AnalyzeCommand}" Classes="primary" />
+                <Button Grid.Column="1" Content="Salvar perfil" Command="{Binding SaveProfileCommand}" />
+              </Grid>
+            </Grid>
+          </Border>
+
+          <ScrollViewer Grid.Row="2">
+            <StackPanel>
+              <Grid ColumnDefinitions="*,*" RowDefinitions="72,72,72,72" Margin="0">
+                <Border Grid.Row="0" Grid.Column="0" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,1,1" Padding="24,14">
+                  <StackPanel><TextBlock Text="ENGINE" Classes="label" /><TextBlock Text="{Binding EngineText}" FontSize="18" /></StackPanel>
+                </Border>
+                <Border Grid.Row="0" Grid.Column="1" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="24,14">
+                  <StackPanel><TextBlock Text="BACKEND" Classes="label" /><TextBlock Text="{Binding BackendText}" FontSize="18" /></StackPanel>
+                </Border>
+                <Border Grid.Row="1" Grid.Column="0" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,1,1" Padding="24,14">
+                  <StackPanel><TextBlock Text="API GRÁFICA" Classes="label" /><TextBlock Text="{Binding GraphicsApiText}" FontSize="18" /></StackPanel>
+                </Border>
+                <Border Grid.Row="1" Grid.Column="1" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="24,14">
+                  <StackPanel><TextBlock Text="PIPELINE" Classes="label" /><TextBlock Text="{Binding PipelineText}" FontSize="18" /></StackPanel>
+                </Border>
+                <Border Grid.Row="2" Grid.Column="0" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,1,1" Padding="24,14">
+                  <StackPanel><TextBlock Text="ARQUITETURA" Classes="label" /><TextBlock Text="{Binding ArchitectureText}" FontSize="18" /></StackPanel>
+                </Border>
+                <Border Grid.Row="2" Grid.Column="1" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="24,14">
+                  <StackPanel><TextBlock Text="ANTI-CHEAT" Classes="label" /><TextBlock Text="{Binding AntiCheatText}" FontSize="18" TextTrimming="CharacterEllipsis" /></StackPanel>
+                </Border>
+                <Border Grid.Row="3" Grid.Column="0" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,1,0" Padding="24,14">
+                  <StackPanel><TextBlock Text="MODO PREFERIDO" Classes="label" /><TextBlock Text="{Binding PreferredModeText}" FontSize="18" Foreground="{StaticResource BlueBrush}" /></StackPanel>
+                </Border>
+                <Border Grid.Row="3" Grid.Column="1" Padding="24,14">
+                  <StackPanel><TextBlock Text="SEGURANÇA" Classes="label" /><TextBlock Text="{Binding SafetyText}" FontSize="18" /></StackPanel>
+                </Border>
+              </Grid>
+              <Border BorderBrush="{StaticResource LineBrush}" BorderThickness="0,1,0,0" Padding="24,18">
+                <StackPanel Spacing="10">
+                  <TextBlock Text="SINAIS DA DETECÇÃO" Classes="label" />
+                  <ItemsControl ItemsSource="{Binding DetectionSignals}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate>
+                        <Border BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="0,7">
+                          <TextBlock Text="{Binding}" />
+                        </Border>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+          </ScrollViewer>
+
+          <Border Grid.Row="3" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,1,0,0" Padding="24,16" Background="{StaticResource SurfaceAltBrush}">
+            <Grid RowDefinitions="Auto,*" RowSpacing="8">
+              <TextBlock Text="SAÍDA DO DIAGNÓSTICO" Classes="label" />
+              <TextBox Grid.Row="1" Text="{Binding DiagnosticOutput}" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" />
+            </Grid>
+          </Border>
+        </Grid>
+      </Border>
+
+      <Grid Grid.Column="2" RowDefinitions="84,*,144">
+        <Border Grid.Row="0" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="24,13">
+          <Grid ColumnDefinitions="58,*">
+            <TextBlock Text="03" Classes="section-number" />
+            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+              <TextBlock Text="Compatibilidade" Classes="section-title" />
+              <TextBlock Text="Ordem e motivo de cada fallback" Classes="muted" FontSize="11" />
+            </StackPanel>
+          </Grid>
+        </Border>
+        <ScrollViewer Grid.Row="1">
+          <Border BorderBrush="{StaticResource BlueBrush}" BorderThickness="2,0,0,0" Margin="28,26,22,26">
+            <ItemsControl ItemsSource="{Binding CompatibilitySteps}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Border BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="18,18,8,20">
+                    <Grid ColumnDefinitions="48,*" RowDefinitions="Auto,Auto,Auto">
+                      <TextBlock Grid.RowSpan="3" Text="{Binding Index}" FontSize="30" FontWeight="Bold" Foreground="{StaticResource BlueBrush}" />
+                      <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="18" FontWeight="SemiBold" />
+                      <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding State}" FontSize="11" FontWeight="Bold" Foreground="{StaticResource BlueBrush}" Margin="0,5,0,0" />
+                      <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Reason}" Classes="muted" TextWrapping="Wrap" Margin="0,8,0,0" />
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </Border>
+        </ScrollViewer>
+        <Border Grid.Row="2" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,1,0,0" Padding="20,10">
+          <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="6">
+            <TextBlock Text="{Binding UnityBridgeStatusText}" Classes="muted" FontSize="10" TextWrapping="Wrap" />
+            <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="6">
+              <Button Grid.Column="0" Content="Virtual Screen" Command="{Binding StartVirtualScreenCommand}" Classes="primary" HorizontalAlignment="Stretch" />
+              <Button Grid.Column="1" Content="Unity Stereo" Command="{Binding StartUnityStereoCommand}" HorizontalAlignment="Stretch" ToolTip.Tip="{Binding UnityBridgeStatusText}" />
+            </Grid>
+            <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="6">
+              <Button Grid.Column="0" Content="Recentrar" Command="{Binding RecenterCommand}" HorizontalAlignment="Stretch" />
+              <Button Grid.Column="1" Content="Parar" Command="{Binding StopSessionCommand}" HorizontalAlignment="Stretch" />
+            </Grid>
+          </Grid>
+        </Border>
+      </Grid>
+    </Grid>
+
+    <Border Grid.Row="3" Background="{StaticResource BlueBrush}" Padding="18,0">
+      <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="24">
+        <TextBlock Text="{Binding StatusMessage}" Foreground="White" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+        <TextBlock Grid.Column="1" Text="{Binding SessionStatusText}" Foreground="White" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="2" Text="Windows x64 / OpenXR / D3D11" Foreground="White" VerticalAlignment="Center" FontWeight="SemiBold" />
+      </Grid>
+    </Border>
+  </Grid>
+</Window>
