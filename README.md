@@ -1,59 +1,110 @@
 # HaumeaVR
 
-HaumeaVR is a Windows-first OpenXR platform for bringing selected
-flat-screen games into VR through a staged, safety-conscious compatibility
-ladder. The original product plan lives in [Plano.md](Plano.md). The
-self-contained implementation roadmap for future work is indexed in
-[docs/planos-implementacao/README.md](docs/planos-implementacao/README.md).
+Leve jogos de tela plana para um ambiente OpenXR no Windows, começando por uma tela virtual segura e evoluindo apenas quando a integração do jogo permite.
 
-## Implemented today
+O HaumeaVR é uma plataforma experimental para PCVR com launcher próprio, core nativo OpenXR e uma escada de compatibilidade honesta. O objetivo não é prometer “VR nativo em qualquer jogo”, mas oferecer um fallback amplo e preservar limites de segurança em integrações mais profundas.
 
-- OpenXR core using the official Khronos loader, D3D11 adapter LUID matching,
-  stereo swapchains, predicted eye poses, mirror window and diagnostics;
-- self-contained Avalonia launcher with Steam/Epic/manual discovery, engine,
-  scripting backend, graphics API and anti-cheat detection, SQLite profiles and
-  authenticated local named-pipe IPC;
-- universal Virtual Screen mode with DXGI Desktop Duplication, window crop,
-  flat/curved GPU mesh, recentering and OpenXR controller actions;
-- opt-in Unity 6000.3 Mono bridge with asymmetric per-eye cameras, a native
-  render-thread plug-in and live cross-process OpenXR pose/texture transport;
-- reproducible Unity Compatibility Lab source for Built-in/Mono and IL2CPP;
-- opt-in, current-process-only D3D11 `Present`/depth observer with a hard
-  anti-cheat veto and no remote-process injector;
-- Depth 3D visualization and stereo compute reconstruction foundation.
+## O que está implementado
 
-Virtual Screen is the universal end-user path. Unity Stereo is exposed only for
-controlled Unity Mono players that already contain both HaumeaVR bridge modules; the
-launcher verifies that deployment, binds the random transport name to the game
-PID and blocks the path when anti-cheat is detected. Generic Depth 3D and
-Geometry Stereo remain foundations rather than advertised game capabilities.
+### Virtual Screen
 
-## Build, test and publish
+É o caminho principal para o usuário:
+
+- captura de desktop ou janela por DXGI Desktop Duplication;
+- tela plana ou curva renderizada no headset;
+- ajuste de tamanho, distância e curvatura;
+- rastreamento da cabeça, janela espelho e recentralização;
+- ações de controles OpenXR;
+- perfis locais para jogos e runtimes.
+
+### Core e launcher
+
+- loader oficial da Khronos e seleção de runtime por processo;
+- correspondência do adaptador D3D11 pelo LUID informado pelo OpenXR;
+- swapchains estereoscópicos, poses previstas e diagnóstico;
+- launcher Avalonia com descoberta Steam, Epic e executáveis manuais;
+- detecção de engine, backend de scripting, API gráfica e anti-cheat;
+- perfis SQLite e IPC local autenticado.
+
+### Integrações controladas
+
+- bridge Unity 6000.3 Mono com câmeras por olho e plug-in nativo;
+- transporte de poses e texturas entre processos com nome aleatório e versão;
+- laboratório de compatibilidade Unity reproduzível para Mono e IL2CPP;
+- observador D3D11 somente no processo atual e com ativação explícita;
+- fundações de reconstrução Depth 3D.
+
+## Limites atuais
+
+Virtual Screen é o modo de uso geral. Os demais caminhos não devem ser interpretados como compatibilidade automática:
+
+- **Unity Stereo** exige um player Mono controlado, já compilado com os dois módulos do HaumeaVR;
+- **Depth 3D** e o observador D3D11 são fundações técnicas, não recursos comerciais habilitados para qualquer jogo;
+- **Geometry Stereo**, integração Unreal, IL2CPP comercial e adapters específicos ainda exigem trabalho;
+- o projeto não adiciona mãos, colisão ou interação física a um jogo que não conheça esses conceitos;
+- jogos com anti-cheat não recebem integração dentro do processo; use apenas a captura externa;
+- o repositório não contém um injetor genérico nem bypass de integridade.
+
+O plano de produto completo está em [Plano.md](Plano.md). A sequência de implementação e os contratos técnicos ficam em [docs/planos-implementacao/README.md](docs/planos-implementacao/README.md).
+
+## Segurança por arquitetura
+
+O HaumeaVR não altera o runtime OpenXR global. A seleção do launcher é transmitida somente ao processo filho por `XR_RUNTIME_JSON`.
+
+Outras proteções:
+
+- IPC aceita clientes locais e exige token aleatório de 256 bits;
+- o token da sessão não é persistido em perfil ou SQLite;
+- o transporte Unity valida PID, nome, formato e dimensões das texturas;
+- recursos D3D11 compartilhados usam keyed mutex;
+- o observador exige `UXRB_D3D11_HOOK_ENABLE=1`;
+- módulos de anti-cheat conhecidos causam bloqueio imediato;
+- nenhum driver, serviço de kernel ou helper de injeção é instalado.
+
+Falhar em um adapter não deve impedir o jogo limpo de abrir. Virtual Screen e execução sem HaumeaVR são os caminhos de retorno.
+
+## Usar um pacote portátil
+
+1. Extraia todo o ZIP para uma pasta local.
+2. Conecte o headset e ative o runtime PCVR desejado.
+3. Execute `HaumeaVR.Launcher.exe`.
+4. Selecione um manifesto OpenXR válido.
+5. Adicione o jogo, clique em **Analisar** e use **Virtual Screen**.
+
+Não execute o launcher de dentro do ZIP. O pacote publicado é autocontido e inclui launcher, core e loader OpenXR; não exige .NET ou Visual C++ Redistributable instalados globalmente.
+
+Os logs ficam em:
+
+```text
+%LOCALAPPDATA%\HaumeaVR\logs
+```
+
+Dados antigos na pasta `UniversalXRBridge` são copiados na primeira execução para preservar perfis.
+
+## Requisitos para desenvolvimento
+
+- Windows x64;
+- Visual Studio Build Tools com MSVC e SDK do Windows;
+- CMake 3.28 ou superior;
+- Ninja;
+- PowerShell;
+- .NET SDK `10.0.301`, definido em `global.json`;
+- acesso à internet na primeira configuração das dependências CMake.
+
+O laboratório Unity requer exatamente Unity `6000.3.19f1`.
+
+## Compilar e testar
 
 ```powershell
 .\scripts\Configure.ps1 -Fresh
 .\scripts\Build.ps1 -Preset windows-msvc-debug
 .\scripts\Test.ps1 -Preset windows-msvc-debug
 .\scripts\TestLauncher.ps1
-.\scripts\Publish.ps1
-.\scripts\Package.ps1
 ```
 
-The self-contained launcher is published to
-`artifacts\launcher\win-x64\HaumeaVR.Launcher.exe` and does not require
-a machine-wide .NET or Visual C++ runtime installation. The official OpenXR
-loader DLL is shipped beside the core, and publication runs the packaged native
-self-test before succeeding. `SHA256SUMS.txt` records every published file hash.
-See [the validation report](docs/validation-2026-07-10.md)
-for the exact test matrix and remaining physical-device check.
+Repita com `windows-msvc-release` antes de publicar.
 
-`Package.ps1` creates a versioned portable ZIP under `artifacts\distribution`.
-It contains no source code and needs no compiler on the destination computer;
-the recipient extracts the whole folder and runs the launcher executable. See
-[the distribution and MiSide status](docs/distribution-and-miside-2026-07-11.md)
-for the clean-extraction test and the exact current compatibility limit.
-
-Useful native checks:
+Verificações nativas úteis:
 
 ```powershell
 .\build\windows-msvc-debug\bin\uxrb_core.exe --self-test
@@ -61,36 +112,69 @@ Useful native checks:
 .\build\windows-msvc-debug\bin\uxrb_core.exe --diagnose
 ```
 
-The Unity lab is pinned to Unity `6000.3.19f1`:
+Para compilar o laboratório:
 
 ```powershell
 .\scripts\BuildUnityLab.ps1 -Backend Mono
 .\scripts\BuildUnityLab.ps1 -Backend IL2CPP
 ```
 
-After building the Mono lab, add its executable to the launcher, analyze it and
-use **Unity Stereo**. The launcher starts it with `-force-d3d11 -uxrb-enable`,
-passes a random versioned shared-memory name through the child environment and
-asks the core to accept textures only from that exact process ID. The Unity
-package is a controlled integration for games/projects where the bridge is
-deployed during the build; it is not a general commercial-game injector.
+## Publicar
 
-## Runtime selection and safety
+```powershell
+.\scripts\Publish.ps1
+.\scripts\Package.ps1
+```
 
-HaumeaVR never writes the global OpenXR runtime registration. A runtime selected in
-the launcher is applied to the child core process only through `XR_RUNTIME_JSON`.
+Saídas:
 
-The IPC server rejects remote clients and authenticates every session with a
-random 256-bit token. No kernel driver, service, unsigned community code or
-anti-cheat bypass is present. The D3D11 observer requires
-`UXRB_D3D11_HOOK_ENABLE=1`, only attaches inside its current process, and refuses
-to run when a known anti-cheat module is loaded. Microsoft Detours' process
-creation/injection source is intentionally excluded from the build.
+```text
+artifacts\launcher\win-x64\HaumeaVR.Launcher.exe
+artifacts\distribution\HaumeaVR-0.1.0-win-x64.zip
+```
 
-The Unity transport is process-local, randomly named and versioned. Its core
-owner refuses a pre-existing mapping, the texture consumer validates producer
-PID/name/format/dimensions, and named D3D11 resources remain guarded by keyed
-mutexes for their entire published lifetime.
+`Publish.ps1` executa o self-test do core já publicado e gera `SHA256SUMS.txt`. `Package.ps1` valida a presença dos arquivos essenciais, cria o ZIP portátil e grava seu SHA-256.
 
-Logs are stored under `%LOCALAPPDATA%\HaumeaVR\logs`. Existing profile data from
-the legacy `UniversalXRBridge` folder is copied on first launch.
+## Estado da validação
+
+O relatório versionado em [docs/validation-2026-07-10.md](docs/validation-2026-07-10.md) registra builds Debug/Release, testes nativos, testes do launcher e checks do pacote daquela revisão.
+
+Naquela validação:
+
+- os testes automatizados e os self-tests publicados passaram;
+- o runtime Virtual Desktop carregou por override local;
+- não havia headset ativo para concluir observação física;
+- o Unity Editor exigido não estava instalado;
+- a rota final em headset e o laboratório Unity permaneceram pendentes.
+
+Esse relatório é evidência histórica de uma revisão específica. Mudanças posteriores ou outra combinação de headset, runtime, GPU e driver precisam de nova validação.
+
+## Arquitetura
+
+```text
+Launcher Avalonia
+  └── IPC local autenticado
+      └── uxrb_core
+          ├── OpenXR, D3D11, poses e swapchains
+          ├── Virtual Screen por Desktop Duplication
+          ├── transporte Unity controlado
+          └── fundação Depth 3D
+```
+
+Detalhes de processos e transportes estão em [docs/architecture.md](docs/architecture.md). O protocolo compartilhado está em [shared/protocol/protocol.md](shared/protocol/protocol.md).
+
+## Contribuição
+
+Antes de propor código:
+
+1. leia os contratos no pacote de planos;
+2. mantenha a seleção de runtime limitada ao processo;
+3. não enfraqueça bloqueios de anti-cheat;
+4. preserve o fallback para Virtual Screen;
+5. inclua testes reproduzíveis e descreva quais verificações físicas continuam pendentes.
+
+Não publique DLLs de terceiros sem revisar licença, procedência e integridade.
+
+## Licença
+
+O código do HaumeaVR é distribuído sob a [Licença MIT](LICENSE). Dependências e componentes mantêm suas próprias licenças; consulte [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
